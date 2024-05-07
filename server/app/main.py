@@ -21,7 +21,7 @@ app.add_middleware(
 class TextInput(BaseModel):
     text: str
 
-@app.post("/search")
+@app.post("/api/search")
 async def search_embeddings(input: TextInput):
     try:
         # Generate embeddings using OpenAI's API
@@ -48,7 +48,7 @@ async def search_embeddings(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@app.post("/generate-and-store-embeddings/")
+@app.post("/api/generate-and-store-embeddings/")
 async def generate_embeddings(input: TextInput):
     try:
         # Generate embeddings using OpenAI's API
@@ -74,7 +74,7 @@ async def generate_embeddings(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
     
     
-@app.post("/retrieve-and-generate-response")
+@app.post("/api/retrieve-and-generate-response")
 async def retrieve_and_generate_response(input: TextInput):
     try:
         print("Retrieving embeddings for the input text")
