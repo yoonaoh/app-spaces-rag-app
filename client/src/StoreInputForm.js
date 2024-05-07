@@ -14,9 +14,9 @@ function StoreInputForm({ onSubmit, placeholder }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={text} onChange={handleInputChange} placeholder={placeholder} />
-      <button type="submit">Store Text</button>
+    <form onSubmit={handleSubmit} className="mb-3">
+      <input type="text" className="form-control mb-2" value={text} onChange={handleInputChange} placeholder={placeholder} />
+      <button type="submit" className="btn btn-success">Store Text</button>
     </form>
   );
 }

@@ -10,13 +10,13 @@ function InputForm({ onSubmit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(text);
-    setText('');
+    // setText('');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={text} onChange={handleInputChange} placeholder="Enter your text here" />
-      <button type="submit">Submit</button>
+    <form onSubmit={handleSubmit} className="mb-3">
+      <input type="text" className="form-control mb-2" value={text} onChange={handleInputChange} />
+      <button type="submit" className="btn btn-primary">Search</button>
     </form>
   );
 }

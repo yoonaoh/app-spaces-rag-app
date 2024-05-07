@@ -1,11 +1,14 @@
 import React from 'react';
 
 function ResponseDisplay({ response }) {
+  // Render only if there is a response
   return (
-    <div>
-      <h2>Response</h2>
-      <p>{response || 'No response received. Please try another query.'}</p>
-    </div>
+    response ? (
+      <div>
+        <h2>Search results:</h2>
+        <p>{response}</p>
+      </div>
+    ) : null  // Render nothing if there's no response
   );
 }
 
