@@ -6,6 +6,15 @@ import ResponseDisplay from './ResponseDisplay';
 import axios from 'axios';
 import './App.css';
 
+let baseHostUrl = '/api';
+
+// eslint-disable-next-line no-restricted-globals
+if (location.host=== 'localhost:3000') {
+  console.log('made it here');
+  baseHostUrl = 'http://127.0.0.1:8000/api';
+  console.log('Warning: Running without emulator. Role and authorization will not be taken into account.');
+}
+
 function App() {
   const [response, setResponse] = useState('');
   const [documents, setDocuments] = useState([]);
@@ -15,7 +24,7 @@ function App() {
   const handleSearchSubmit = async (text) => {
     setIsLoading(true);
     try {
-      const result = await axios.post('http://localhost:8000/retrieve-and-generate-response/', { text });
+      const result = await axios.post(`${baseHostUrl}/retrieve-and-generate-response/`, { text });
       setResponse(result.data.response);
       setDocuments(result.data.documents);
     } catch (error) {
@@ -28,7 +37,7 @@ function App() {
   const handleStoreSubmit = async (text) => {
     // setIsLoading(true);
     try {
-      const result = await axios.post('http://localhost:8000/generate-and-store-embeddings/', { text });
+      const result = await axios.post(`${baseHostUrl}/generate-and-store-embeddings/`, { text });
       setStoreStatus(result.data.message);
     } catch (error) {
       console.error('Error storing data: ', error);
