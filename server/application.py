@@ -23,6 +23,7 @@ class TextInput(BaseModel):
 
 @app.post("/api/search")
 async def search_embeddings(input: TextInput):
+    print('Made it into the route successfully')
     try:
         # Generate embeddings using OpenAI's API
         response = client.embeddings.create(
@@ -76,6 +77,7 @@ async def generate_embeddings(input: TextInput):
     
 @app.post("/api/retrieve-and-generate-response")
 async def retrieve_and_generate_response(input: TextInput):
+    print('Made it here into the route')
     try:
         print("Retrieving embeddings for the input text")
         response = client.embeddings.create(
