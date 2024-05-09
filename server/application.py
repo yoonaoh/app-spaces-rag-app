@@ -7,7 +7,7 @@ from qdrant_client.models import PointStruct, SearchParams, Distance
 from fastapi.middleware.cors import CORSMiddleware
 
 client = OpenAI()
-qdrant_client = QdrantClient(host="localhost", port=6333)
+qdrant_client = QdrantClient(host="qdrant-db.internal.salmonbeach-163ac3d8.westus2.azurecontainerapps.io", port=6333)
 app = FastAPI()
 
 app.add_middleware(
@@ -20,6 +20,14 @@ app.add_middleware(
 
 class TextInput(BaseModel):
     text: str
+    
+@app.get('/api/create-collection')
+async def create_collection():
+    try:
+        qdrant_client.create_collection(collection_name="example_collection", vectors_config=VectorParams(size=1536, distance=Distance.COSINE))
+        return {"message": "Collection created successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))    
 
 @app.post("/api/search")
 async def search_embeddings(input: TextInput):
