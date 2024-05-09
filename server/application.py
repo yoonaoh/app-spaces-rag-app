@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allows access from your React app
+    allow_origins=["http://localhost:3000", "https://salmon-moss-08b81541e.5.azurestaticapps.net"],  # Allows access from your React app
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
