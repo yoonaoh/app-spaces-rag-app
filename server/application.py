@@ -35,6 +35,8 @@ async def generate_embeddings(input: TextInput):
             input=input.text 
         )
         embeddings = response['data'][0]['embedding'] if isinstance(response, dict) else response.data[0].embedding
+        print('made it through openai')
+        print(embeddings)
         vector_id = str(uuid.uuid4())
         
         if not qdrant_client.collection_exists(collection_name="example_collection"):
