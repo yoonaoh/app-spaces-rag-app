@@ -12,7 +12,7 @@ QDRANT_HOST = os.environ['QDRANT_HOST']
 QDRANT_PORT = os.environ['QDRANT_PORT']
 QDRANT_URL = os.environ['QDRANT_URL']
 
-qdrant_client = QdrantClient(url=QDRANT_URL)
+qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 app = FastAPI()
 
 app.add_middleware(
