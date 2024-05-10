@@ -20,11 +20,12 @@ function App() {
   const [documents, setDocuments] = useState([]);
   const [storeStatus, setStoreStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState(''); // State to hold the API key
 
   const handleSearchSubmit = async (text) => {
     setIsLoading(true);
     try {
-      const result = await axios.post(`${baseHostUrl}/retrieve-and-generate-response/`, { text });
+      const result = await axios.post(`${baseHostUrl}/retrieve-and-generate-response/`, { text, apiKey });
       setResponse(result.data.response);
       setDocuments(result.data.documents);
     } catch (error) {
@@ -35,20 +36,34 @@ function App() {
   };
 
   const handleStoreSubmit = async (text) => {
-    // setIsLoading(true);
     try {
-      const result = await axios.post(`${baseHostUrl}/generate-and-store-embeddings/`, { text });
+      const result = await axios.post(`${baseHostUrl}/generate-and-store-embeddings/`, { text, apiKey });
       setStoreStatus(result.data.message);
     } catch (error) {
       console.error('Error storing data: ', error);
       setStoreStatus('Failed to store data');
     }
-    // setIsLoading(false);
+  };
+
+  const handleApiKeyChange = (e) => {
+    setApiKey(e.target.value);
   };
   return (
     <div className="app container mt-5">
       <h1 className="text-center mb-4">Retrieval-Augmented Generation Basic App</h1>
-      
+      <div className="configuration-section card mb-4">
+        <div className="card-body">
+          <h2 className="card-title">Configuration</h2>
+          <p className="card-text">IMPORTANT: You must supply your OpenAI API key in this box. It will be used to query the OpenAI API.</p>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter your OpenAI API Key here"
+            value={apiKey}
+            onChange={handleApiKeyChange}
+          />
+        </div>
+      </div>
       <div className="search-section card mb-4">
         <div className="card-body">
           <h2 className="card-title">Ask a question</h2>

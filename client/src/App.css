@@ -30,6 +30,10 @@
   background-color: #f8f9fa;
 }
 
+.configuration-section {
+  max-width: 600px;
+}
+
 input[type="text"], button {
   width: calc(100% - 20px);
   padding: 10px;
