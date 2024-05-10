@@ -6,7 +6,6 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, SearchParams, Distance, VectorParams
 from fastapi.middleware.cors import CORSMiddleware
 
-client = OpenAI()
 
 QDRANT_HOST = os.environ['QDRANT_HOST']
 QDRANT_PORT = os.environ['QDRANT_PORT']
@@ -26,12 +25,14 @@ app.add_middleware(
 
 class TextInput(BaseModel):
     text: str
+    apiKey: str
     
 @app.post("/api/generate-and-store-embeddings/")
 async def generate_embeddings(input: TextInput):
     try:
         print('calling openai')
         # Generate embeddings using OpenAI's API
+        client = OpenAI(api_key=input.apiKey)
         response = client.embeddings.create(
             model="text-embedding-3-small",
             input=input.text 
@@ -90,6 +91,7 @@ async def generate_embeddings(input: TextInput):
 async def retrieve_and_generate_response(input: TextInput):
     print('Made it here into the route')
     try:
+        client = OpenAI(api_key=input.apiKey)
         print("Retrieving embeddings for the input text")
         response = client.embeddings.create(
             model="text-embedding-3-small",
