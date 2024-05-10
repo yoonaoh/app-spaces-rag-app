@@ -10,7 +10,6 @@ let baseHostUrl = '/api';
 
 // eslint-disable-next-line no-restricted-globals
 if (location.host=== 'localhost:3000') {
-  console.log('made it here');
   baseHostUrl = 'http://127.0.0.1:8000/api';
   console.log('Warning: Running without emulator. Role and authorization will not be taken into account.');
 }
@@ -83,7 +82,6 @@ function App() {
           )}
         </div>
       </div>
-      
       <div className="store-section card">
         <div className="card-body">
           <h2 className="card-title">Store new text</h2>
