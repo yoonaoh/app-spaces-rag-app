@@ -49,7 +49,9 @@ async def generate_embeddings(input: TextInput):
         try:
             # Attempt to check if the collection exists
             collection_exists = qdrant_client.collection_exists(collection_name="example_collection")
+            print(collection_exists)
         except Exception as e:
+            print(e)
             # Handle all exceptions that could be thrown by the collection_exists method
             if '404' in str(e):  # Assuming the error message contains the status code
                 collection_exists = False
