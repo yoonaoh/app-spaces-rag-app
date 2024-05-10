@@ -4,7 +4,6 @@ from openai import OpenAI
 import os, uuid
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, SearchParams, Distance, VectorParams
-from qdrant_client.exceptions import QdrantHTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 client = OpenAI()
@@ -45,23 +44,32 @@ async def generate_embeddings(input: TextInput):
         print(embeddings)
         vector_id = str(uuid.uuid4())
         
-      # Check if the collection exists, handle possible 404 as collection not found
+      # Assuming qdrant_client has been initialized
         try:
+            # Attempt to check if the collection exists
             collection_exists = qdrant_client.collection_exists(collection_name="example_collection")
-        except QdrantHTTPException as e:
-            if e.status_code == 404:
+        except Exception as e:
+            # Handle all exceptions that could be thrown by the collection_exists method
+            if '404' in str(e):  # Assuming the error message contains the status code
                 collection_exists = False
                 print('The collection does not exist, will attempt to create it.')
             else:
-                raise  # Reraise the exception if it's not a 404
+                # Log unexpected exceptions and re-raise them
+                print(f"An unexpected error occurred: {str(e)}")
+                raise HTTPException(status_code=500, detail=str(e))
 
         if not collection_exists:
-            print('collection does not exist')
-            qdrant_client.create_collection(
-                collection_name="example_collection",
-                vectors_config=VectorParams(size=1536, distance=Distance.COSINE)
-            )
-            
+            print('Collection does not exist, creating it...')
+            try:
+                qdrant_client.create_collection(
+                    collection_name="example_collection",
+                    vectors_config=VectorParams(size=1536, distance=Distance.COSINE)
+                )
+            except Exception as e:
+                # Handle exceptions that might occur during collection creation
+                print(f"Failed to create collection: {str(e)}")
+                raise HTTPException(status_code=500, detail=str(e))
+        
         # Prepare a point for Qdrant insertion
         point = PointStruct(
             id=vector_id,
