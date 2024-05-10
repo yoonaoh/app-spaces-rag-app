@@ -86,7 +86,7 @@ async def generate_embeddings(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
     
     
-@app.post("/api/retrieve-and-generate-response")
+@app.post("/api/retrieve-and-generate-response/")
 async def retrieve_and_generate_response(input: TextInput):
     print('Made it here into the route')
     try:
