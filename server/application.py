@@ -7,20 +7,26 @@ from qdrant_client.models import PointStruct, SearchParams, Distance, VectorPara
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
+#
+##
+### Configuration
 QDRANT_HOST = os.environ['QDRANT_HOST']
 QDRANT_PORT = os.environ['QDRANT_PORT']
 qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
-# qdrant_client = QdrantClient(host="localhost", port=6333)
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://salmon-moss-08b81541e.5.azurestaticapps.net"],  # Allows access from your React app
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:3000", "https://salmon-moss-08b81541e.5.azurestaticapps.net"],  # Allows access from your React app
+#     allow_credentials=True,
+#     allow_methods=["*"],  # Allows all methods
+#     allow_headers=["*"],  # Allows all headers
+# )
+
+#
+##
+### Helper functions for querying Qdrant database
 
 def does_collection_exist(protocol, hostname, port, collection_name):
     """Check if a specific collection exists by fetching all collections and searching for the name."""
@@ -36,6 +42,10 @@ def does_collection_exist(protocol, hostname, port, collection_name):
         print(f"HTTP Request failed: {e}")
         return False
 
+#
+##
+### API routes
+
 class TextInput(BaseModel):
     text: str
     apiKey: str
@@ -43,7 +53,6 @@ class TextInput(BaseModel):
 @app.post("/api/generate-and-store-embeddings/")
 async def generate_embeddings(input: TextInput):
     try:
-        print('calling openai')
         # Generate embeddings using OpenAI's API
         client = OpenAI(api_key=input.apiKey)
         response = client.embeddings.create(
@@ -51,24 +60,18 @@ async def generate_embeddings(input: TextInput):
             input=input.text 
         )
         embeddings = response['data'][0]['embedding'] if isinstance(response, dict) else response.data[0].embedding
-        print('made it through openai')
-        print(embeddings)
         vector_id = str(uuid.uuid4())
         
         collection_name = "example_collection"
         collection_exists = does_collection_exist('http', QDRANT_HOST, QDRANT_PORT, collection_name)
-        # collection_exists = does_collection_exist('http', 'localhost', 6333, collection_name)
-        print(f"Collection exists: {collection_exists}")
 
         if not collection_exists:
-            print('Collection does not exist, creating it...')
             try:
                 qdrant_client.create_collection(
                     collection_name="example_collection",
                     vectors_config=VectorParams(size=1536, distance=Distance.COSINE)
                 )
             except Exception as e:
-                print(f"Failed to create collection: {str(e)}")
                 raise HTTPException(status_code=500, detail=str(e))
         
         # Prepare a point for Qdrant insertion
@@ -79,7 +82,6 @@ async def generate_embeddings(input: TextInput):
         )
 
         # Insert the point into Qdrant
-        print('inserting into collection')
         qdrant_client.upsert(collection_name="example_collection", points=[point])
         return {"message": "Embeddings generated and stored successfully"}
 
@@ -90,10 +92,8 @@ async def generate_embeddings(input: TextInput):
     
 @app.post("/api/retrieve-and-generate-response/")
 async def retrieve_and_generate_response(input: TextInput):
-    print('Made it here into the route')
     try:
         client = OpenAI(api_key=input.apiKey)
-        print("Retrieving embeddings for the input text")
         response = client.embeddings.create(
             model="text-embedding-3-small",
             input=input.text 
@@ -107,10 +107,8 @@ async def retrieve_and_generate_response(input: TextInput):
             limit=3
         )
         documents = [{"text": doc.payload['text'], "score": doc.score} for doc in search_result] if search_result else []
-
-        
         prompt = f"Question: {input.text}\n\n" + "\n\n".join([f"Document {i+1}: {doc['text']}" for i, doc in enumerate(documents)])
-        print(prompt)
+        
         completion = client.chat.completions.create(
          model="gpt-4-turbo",
          messages=[
