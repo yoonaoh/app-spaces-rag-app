@@ -10,9 +10,10 @@ client = OpenAI()
 
 QDRANT_HOST = os.environ['QDRANT_HOST']
 QDRANT_PORT = os.environ['QDRANT_PORT']
-QDRANT_URL = os.environ['QDRANT_URL_WORKING']
+# QDRANT_URL = os.environ['QDRANT_URL_WORKING']
 
-qdrant_client = QdrantClient(QDRANT_URL)
+qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+# qdrant_client = QdrantClient(host="localhost", port=6333)
 app = FastAPI()
 
 app.add_middleware(
@@ -37,14 +38,24 @@ async def generate_embeddings(input: TextInput):
         )
         embeddings = response['data'][0]['embedding'] if isinstance(response, dict) else response.data[0].embedding
         print('made it through openai')
-        print('qdrant host:' + QDRANT_HOST)
-        print('qdrant port:' + QDRANT_PORT)
-        print('qdrant URL:' + QDRANT_URL)
+        # print('qdrant host:' + QDRANT_HOST)
+        # print('qdrant port:' + QDRANT_PORT)
+        # print('qdrant URL:' + QDRANT_URL)
         print(embeddings)
         vector_id = str(uuid.uuid4())
         
-        if not qdrant_client.collection_exists(collection_name="example_collection"):
-            print('the collection did not exist')
+      # Check if the collection exists, handle possible 404 as collection not found
+        try:
+            collection_exists = qdrant_client.collection_exists(collection_name="example_collection")
+        except QdrantHTTPException as e:
+            if e.status_code == 404:
+                collection_exists = False
+                print('The collection does not exist, will attempt to create it.')
+            else:
+                raise  # Reraise the exception if it's not a 404
+
+        if not collection_exists:
+            print('collection does not exist')
             qdrant_client.create_collection(
                 collection_name="example_collection",
                 vectors_config=VectorParams(size=1536, distance=Distance.COSINE)
