@@ -22,35 +22,19 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-
-def check_collection_exists(protocol, hostname, port, collection_name):
-    """
-    Checks if a collection exists by making an HTTP GET request to the specified URL.
-
-    Args:
-        protocol (str): The protocol to use ('http' or 'https')
-        hostname (str): The hostname of the server
-        port (int): The port number on which the server is running
-        collection_name (str): The name of the collection to check
-
-    Returns:
-        bool: True if the collection exists, False otherwise
-    """
-    url = f"{protocol}://{hostname}:{port}/collections/{collection_name}/exists"
-    print(url)
+def does_collection_exist(protocol, hostname, port, collection_name):
+    """Check if a specific collection exists by fetching all collections and searching for the name."""
+    url = f"{protocol}://{hostname}:{port}/collections"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        response.raise_for_status()
         data = response.json()
-        return data['result']['exists']
+        # Parse the collections list from the nested 'result' -> 'collections' structure
+        existing_collection = [collection['name'] for collection in data.get('result', {}).get('collections', [])]
+        return collection_name in existing_collection
     except requests.RequestException as e:
         print(f"HTTP Request failed: {e}")
-        return False  # or re-raise the exception if you prefer
-
-# Example usage:
-# exists = check_collection_lead_exists('http', 'localhost', 8080, 'my_collection')
-# print("Collection exists:", exists)
-
+        return False
 
 class TextInput(BaseModel):
     text: str
@@ -72,7 +56,8 @@ async def generate_embeddings(input: TextInput):
         vector_id = str(uuid.uuid4())
         
         collection_name = "example_collection"
-        collection_exists = check_collection_exists('http', QDRANT_HOST, QDRANT_PORT, collection_name)
+        collection_exists = does_collection_exist('http', QDRANT_HOST, QDRANT_PORT, collection_name)
+        # collection_exists = does_collection_exist('http', 'localhost', 6333, collection_name)
         print(f"Collection exists: {collection_exists}")
 
         if not collection_exists:
