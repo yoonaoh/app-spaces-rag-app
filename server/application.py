@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from openai import OpenAI
-import os, uuid
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, SearchParams, Distance, VectorParams
 from fastapi.middleware.cors import CORSMiddleware
+
+import os, uuid
 import requests
 
 #
@@ -27,7 +28,6 @@ app = FastAPI()
 #
 ##
 ### Helper functions for querying Qdrant database
-
 def does_collection_exist(protocol, hostname, port, collection_name):
     """Check if a specific collection exists by fetching all collections and searching for the name."""
     url = f"{protocol}://{hostname}:{port}/collections"
