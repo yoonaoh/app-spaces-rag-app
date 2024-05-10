@@ -10,8 +10,9 @@ client = OpenAI()
 
 QDRANT_HOST = os.environ['QDRANT_HOST']
 QDRANT_PORT = os.environ['QDRANT_PORT']
+QDRANT_URL = os.environ['QDRANT_URL']
 
-qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+qdrant_client = QdrantClient(url=QDRANT_URL)
 app = FastAPI()
 
 app.add_middleware(
@@ -38,6 +39,7 @@ async def generate_embeddings(input: TextInput):
         print('made it through openai')
         print('qdrant host:' + QDRANT_HOST)
         print('qdrant port:' + QDRANT_PORT)
+        print('qdrant URL:' + QDRANT_URL)
         print(embeddings)
         vector_id = str(uuid.uuid4())
         
