@@ -4,6 +4,7 @@ from openai import OpenAI
 import os, uuid
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, SearchParams, Distance, VectorParams
+from qdrant_client.exceptions import QdrantHTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 client = OpenAI()
