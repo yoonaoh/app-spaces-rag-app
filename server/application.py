@@ -36,6 +36,8 @@ async def generate_embeddings(input: TextInput):
         )
         embeddings = response['data'][0]['embedding'] if isinstance(response, dict) else response.data[0].embedding
         print('made it through openai')
+        print('qdrant host:' + QDRANT_HOST)
+        print('qdrant port:' + QDRANT_PORT)
         print(embeddings)
         vector_id = str(uuid.uuid4())
         
