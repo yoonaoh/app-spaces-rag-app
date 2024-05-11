@@ -527,7 +527,7 @@
                 "environmentId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourceGroups/', parameters('resourceGroupName'),'/providers/Microsoft.App/managedEnvironments/', parameters('containerAppEnvironmentName'))]",
                 "configuration": {
                     "service": {
-                        "type": "postgres"
+                        "type": "qdrant"
                     }
                 },
                 "workloadProfileName": "Consumption"
