@@ -3,7 +3,7 @@
   "components": [
     {
       "id": "frontend",
-      "friendlyName": "Todo Frontend",
+      "friendlyName": "RAG Frontend",
       "type": "static",
       "appLocation": "./client",
       "linkedTo": ["backend"],
@@ -11,17 +11,17 @@
     },
     {
       "id": "backend",
-      "friendlyName": "Todo Backend",
+      "friendlyName": "RAG Backend",
       "type": "api",
       "appLocation": "./server",
       "linkedTo": ["database"],
-      "ingressPort": "3001"
+      "ingressPort": "80"
     },
     {
       "id": "database",
-      "friendlyName": "Postgres Database",
+      "friendlyName": "Qdrant Database",
       "type": "database",
-      "resourceType": "postgres"
+      "resourceType": "qdrant"
     }
   ]
 }
